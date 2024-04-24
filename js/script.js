@@ -1,5 +1,7 @@
 const overview = document.querySelector(".overview");
 const repoList = document.querySelector(".repo-list");
+const allRepos = document.querySelector(".repos");
+const repoData = document.querySelector(".repo-data");
 
 const username = "shareestark";
 
@@ -28,6 +30,8 @@ const displayGitHubData = function (data) {
   getRepos();
 }; 
 
+// Fetch Repo Data 
+
 const getRepos = async function () {
     const fetchRepos = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
     const repoData = await fetchRepos.json();
@@ -42,3 +46,49 @@ const displayRepos = function (repos) {
       repoList.append(repoItem);
     }
   };
+
+
+// Display info on each Repo
+
+repoList.addEventListener("click", function(e) {
+    if (e.target.matches("h3")) {
+        const repoName = e.target.innerText;
+        getRepoInfo(repoName);
+    }
+});
+
+const getRepoInfo = async function (repoName) {
+    const res = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
+    const repoInfo = await res.json();
+    console.log(repoInfo);
+
+     // Fetch language data
+     const fetchLanguages = await fetch(repoInfo.languages_url);
+     const languageData = await fetchLanguages.json();
+ 
+     // Add languages to an array
+     const languages = [];
+     for (const language in languageData) {
+         languages.push(language);
+     }
+ 
+     displaySpecificRepoInfo(repoInfo, languages);
+};
+
+const displaySpecificRepoInfo = function (repoInfo, languages) {
+    repoData.innerHTML = "";
+    repoData.classList.remove("hide");
+    allRepos.classList.add("hide");
+    const newDiv2 = document.createElement("div");
+    newDiv2.innerHTML = `
+    <h3>Name: ${repoInfo.name}</h3>
+    <p>Description: ${repoInfo.description}</p>
+    <p>Default Branch: ${repoInfo.default_branch}</p>
+    <p>Languages: ${languages.join(", ")}</p>
+    <a class="visit" href="${repoInfo.html_url}" target="_blank" rel="noreferrer noopener">View Repo on GitHub!</a>`;
+
+    repoData.append(newDiv2);
+};
+  
+
+
