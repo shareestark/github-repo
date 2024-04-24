@@ -2,6 +2,8 @@ const overview = document.querySelector(".overview");
 const repoList = document.querySelector(".repo-list");
 const allRepos = document.querySelector(".repos");
 const repoData = document.querySelector(".repo-data");
+const backButton = document.querySelector(".view-repos");
+const filterInput = document.querySelector("input.filter-repos");
 
 const username = "shareestark";
 
@@ -39,6 +41,9 @@ const getRepos = async function () {
 };
 
 const displayRepos = function (repos) {
+
+    filterInput.classList.remove("hide");
+    
     for (const repo of repos) {
       const repoItem = document.createElement("li");
       repoItem.classList.add("repo");
@@ -76,6 +81,7 @@ const getRepoInfo = async function (repoName) {
 };
 
 const displaySpecificRepoInfo = function (repoInfo, languages) {
+    backButton.classList.remove("hide");
     repoData.innerHTML = "";
     repoData.classList.remove("hide");
     allRepos.classList.add("hide");
@@ -90,5 +96,26 @@ const displaySpecificRepoInfo = function (repoInfo, languages) {
     repoData.append(newDiv2);
 };
   
+backButton.addEventListener("click", function () {
+    allRepos.classList.remove("hide");
+    repoData.classList.add("hide");
+    backButton.classList.add("hide");
+})
+
+filterInput.addEventListener("input", function(e) {
+    const searchText = e.target.value;
+    console.log(searchText);
+    const repos = document.querySelectorAll(".repo");
+    const searchLowerCase = searchText.toLowerCase();
+    repos.forEach(repo => {
+        const repoText = repo.innerText.toLowerCase();
+
+        if (repoText.includes(searchText)) {
+            repo.classList.remove("hide");
+        } else {
+            repo.classList.add("hide");
+        }
+    })
+})
 
 
